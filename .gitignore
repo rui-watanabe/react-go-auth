@@ -2,3 +2,4 @@
 config.ini
 webapp.log
 webapp.sql
+go.sum
