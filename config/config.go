@@ -13,6 +13,7 @@ type ConfigList struct {
 	DBHost string
 	DBName string
 	DBPort int
+	Secret string
 }
 
 var Config ConfigList
@@ -30,5 +31,6 @@ func init() {
 		DBHost: cfg.Section("db").Key("host").String(),
 		DBName: cfg.Section("db").Key("name").String(),
 		DBPort: cfg.Section("db").Key("port").MustInt(),
+		Secret: cfg.Section("web").Key("secret").String(),
 	}
 }
