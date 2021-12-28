@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"react-go-auth2/config"
 	"react-go-auth2/database"
 	"react-go-auth2/models"
@@ -85,9 +84,30 @@ func Login(c *fiber.Ctx) error {
 
 	c.Cookie(&cookie)
 
-	fmt.Println(c.Cookies("jwt"))
-
 	return c.JSON(fiber.Map{
 		"message": "success",
 	})
+}
+
+func User(c *fiber.Ctx) error {
+	cookie := c.Cookies("jwt")
+
+	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(t *jwt.Token) (interface{}, error) {
+		return []byte(config.Config.Secret), nil
+	})
+
+	if err != nil {
+		c.Status(fiber.StatusUnauthorized)
+		return c.JSON(fiber.Map{
+			"message": "unauthenticated",
+		})
+	}
+
+	claims := token.Claims.(*jwt.StandardClaims)
+
+	var user models.User
+
+	database.DB.Where("id = ?", claims.Issuer).First(&user)
+
+	return c.JSON(user)
 }
